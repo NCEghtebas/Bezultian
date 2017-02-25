@@ -1,6 +1,6 @@
 # Bezultian
 Strategy Cult Game 
 
-![Bezulith](http://wallpapersafari.com/w/7xaDS1/)
+![Bezulith](bezultian.jpg)
 
 
