@@ -1,6 +1,6 @@
 # Bezultian
 Strategy Cult Game 
 
-![Bezulith](bezultian.jpg)
+![Bezulith](Assets/Pictures/bezultian.jpg)
 
 
