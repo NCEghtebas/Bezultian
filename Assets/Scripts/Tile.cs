@@ -1,9 +1,26 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class Tile : MonoBehaviour {
 
-	public Tile(GameObject type,Vector3 pos){
+	private ITileType type;
+	public IList<Unit> units= new List<Unit>();
+
+	public void addUnit(Unit unit){
+		units.Add(unit);
+	}
+	public void removeUnit(Unit unit){
+		units.Remove (unit);
+	}
+
+	public void setType(ITileType newType){
+		type = newType;
+		onTypeChange ();
+	}
+
+	private void onTypeChange(){
+		GetComponent<SpriteRenderer>().color=type.backgroundColor();
 	}
 
 	public float getSize(){
