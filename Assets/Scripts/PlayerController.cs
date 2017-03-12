@@ -18,8 +18,8 @@ public class PlayerController : MonoBehaviour {
 		CharacterController controller = GetComponent<CharacterController>();
 		Vector3 forMov = this.transform.forward * speed * Input.GetAxis ("Vertical") * Time.deltaTime;
 		Vector3 sideMov = this.transform.right * speed * Input.GetAxis ("Horizontal") * Time.deltaTime;
-		Vector3 forMovClamp = new Vector3 (forMov.x,0f , forMov.z);
-		Vector3 sideMovClamp = new Vector3 (sideMov.x,0f ,sideMov.z);
+		Vector3 forMovClamp = new Vector3 (forMov.x,forMov.z, 0f);
+		Vector3 sideMovClamp = new Vector3 (sideMov.x,sideMov.z ,0f);
 		controller.Move (forMovClamp);
 		controller.Move (sideMovClamp);
 	}

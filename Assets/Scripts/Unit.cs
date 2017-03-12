@@ -3,13 +3,12 @@ using System.Collections;
 
 public class Unit : MonoBehaviour {
 
-	// Use this for initialization
-	void Start () {
-	
+	public Tile ground;
+
+	public void setGround(Tile ground){
+		this.ground=ground;
 	}
-	
-	// Update is called once per frame
-	void Update () {
-	
+	public Tile getGround(){
+		return ground;
 	}
 }

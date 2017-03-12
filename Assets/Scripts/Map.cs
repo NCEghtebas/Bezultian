@@ -15,8 +15,11 @@ public class Map : MonoBehaviour {
 	}
 
 	public void Update(){
-		if (Input.GetKeyDown (KeyCode.W)) {
+		if (Input.GetKeyDown (KeyCode.R)) {
 			printMap ();
+		}
+		if (Input.GetKeyDown (KeyCode.T)) {
+			moveUnit((Unit) FindObjectOfType(typeof(Unit)),0,1);
 		}
 	}
 
@@ -30,8 +33,20 @@ public class Map : MonoBehaviour {
 	}
 		
 	public void addUnits(){
-		GameObject go=(GameObject)GameObject.Instantiate (defaultUnit, new Vector3 (0*SPACING, 0*SPACING, 0),Quaternion.identity);
-		tiles [0, 0].GetComponent<Tile> ().addUnit (go.GetComponent<Unit>());
+		addUnit (0, 0);
+	}
+
+	private void addUnit(int x, int y){
+		GameObject go=(GameObject)GameObject.Instantiate (defaultUnit, new Vector3 (x*SPACING, y*SPACING, 0),Quaternion.identity);
+		tiles [x, y].GetComponent<Tile> ().addUnit (go.GetComponent<Unit>());
+		go.GetComponent<Unit> ().setGround (tiles [x, y].GetComponent<Tile> ());
+	}
+
+	public void moveUnit(Unit unit, int newX,int newY){
+		unit.gameObject.transform.position = new Vector3 (newX * SPACING, newY * SPACING, 0);
+		unit.getGround ().removeUnit(unit);
+		unit.setGround (tiles [newX, newY].GetComponent<Tile> ());
+		tiles [newX, newY].GetComponent<Tile> ().addUnit (unit);
 	}
 
 	public void printMap(){
@@ -75,6 +90,7 @@ public class Map : MonoBehaviour {
 				GameObject go=(GameObject)GameObject.Instantiate (defaultObj, new Vector3 (x*SPACING, y*SPACING, 0),Quaternion.identity);
 				go.gameObject.AddComponent<Tile>();
 				go.GetComponent<Tile> ().setType (tileTypes [x, y]);
+				go.name="["+x+","+y+"]";
 				tiles [x, y] = go;
 				if (SPACING == 1) {
 					SPACING = tiles [0, 0].GetComponent<Tile>().getSize ();
