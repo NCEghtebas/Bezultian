@@ -26,4 +26,8 @@ public class Tile : MonoBehaviour {
 	public float getSize(){
 		return gameObject.GetComponent<SpriteRenderer>().sprite.bounds.size.x;
 	}
+
+	public bool allowsMovement(){
+		return type.allowsMovement();
+	}
 }
