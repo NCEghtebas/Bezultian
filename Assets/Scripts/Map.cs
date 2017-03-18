@@ -19,7 +19,17 @@ public class Map : MonoBehaviour {
 			printMap ();
 		}
 		if (Input.GetKeyDown (KeyCode.T)) {
-			moveUnit((Unit) FindObjectOfType(typeof(Unit)),0,1);
+			Movement mov = ((Movement)FindObjectOfType (typeof(Movement)));
+			if (!mov.hasPath()) {
+				Queue<Pair<int,int>> path = new Queue<Pair<int,int>> ();
+				path.Enqueue (new Pair<int,int> (0, 1));
+				path.Enqueue (new Pair<int,int> (0, 2));
+				path.Enqueue (new Pair<int,int> (0, 3));
+				path.Enqueue (new Pair<int,int> (1, 3));
+				path.Enqueue (new Pair<int,int> (2, 3));
+				path.Enqueue (new Pair<int,int> (2, 4));
+				mov.addPath (path);
+			}
 		}
 	}
 
