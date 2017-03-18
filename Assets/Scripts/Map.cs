@@ -20,14 +20,10 @@ public class Map : MonoBehaviour {
 		}
 		if (Input.GetKeyDown (KeyCode.T)) {
 			Movement mov = ((Movement)FindObjectOfType (typeof(Movement)));
+			Unit unit = mov.gameObject.GetComponent<Unit> ();
 			if (!mov.hasPath()) {
-				Queue<Pair<int,int>> path = new Queue<Pair<int,int>> ();
-				path.Enqueue (new Pair<int,int> (0, 1));
-				path.Enqueue (new Pair<int,int> (0, 2));
-				path.Enqueue (new Pair<int,int> (0, 3));
-				path.Enqueue (new Pair<int,int> (1, 3));
-				path.Enqueue (new Pair<int,int> (2, 3));
-				path.Enqueue (new Pair<int,int> (2, 4));
+				PathSearcher searcher = new PathSearcher (this, unit);
+				Queue<Pair<int,int>> path=searcher.findPath (-1, -1);
 				mov.addPath (path);
 			}
 		}
