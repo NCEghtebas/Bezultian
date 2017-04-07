@@ -1,15 +1,50 @@
 ﻿using UnityEngine;
+using UnityEditor;
 using System.Collections;
 using System.Collections.Generic;
 
 //This class needs refactoring real bad. Lets ignore it until its a real problem :)
-public class Map : MonoBehaviour {
+public class Map : MonoBehaviour, ISerializationCallbackReceiver {
 
-	private GameObject[,] tiles;
-	private ITileType[,] tileTypes;
+	public GameObject[,] tiles;
+	public ITileType[,] tileTypes;
 	public GameObject defaultObj;
 	public GameObject defaultUnit;
 	float SPACING=1;
+
+	[HideInInspector]
+	[SerializeField]
+	private GameObject[] m_FlattendMapLayout=null;
+
+	[HideInInspector]
+	[SerializeField]
+	private int m_FlattendMapLayoutRows;
+
+	public void OnBeforeSerialize()
+	{
+		if (tiles != null) {
+			int c1 = tiles.GetLength (0);
+			int c2 = tiles.GetLength (1);
+			int count = c1 * c2;
+			m_FlattendMapLayout = new GameObject[count];
+			m_FlattendMapLayoutRows = c1;
+			for (int i = 0; i < count; i++) {
+				m_FlattendMapLayout [i] = tiles [i % c1, i / c1];
+			}
+		}
+	}
+	public void OnAfterDeserialize()
+	{
+		if (m_FlattendMapLayout != null) {
+			int count = m_FlattendMapLayout.Length;
+			int c1 = m_FlattendMapLayoutRows;
+			int c2 = count / c1;
+			tiles = new GameObject[c1, c2];
+			for (int i = 0; i < count; i++) {
+				tiles [i % c1, i / c1] = m_FlattendMapLayout [i];
+			}
+		}
+	}
 
 	public Map (){
 	}
@@ -30,6 +65,18 @@ public class Map : MonoBehaviour {
 	}
 
 	public void Start(){
+		Debug.Log (tiles);
+		/*
+		defaultObj= (GameObject)Resources.Load("Prefabs/DefaultTile");
+		defaultUnit = (GameObject)Resources.Load ("Prefabs/DefaultUnit");
+		designMap();
+		createMap ();
+		drawGrid ();
+		addUnits ();
+		*/
+	}
+
+	public void create(){
 		defaultObj= (GameObject)Resources.Load("Prefabs/DefaultTile");
 		defaultUnit = (GameObject)Resources.Load ("Prefabs/DefaultUnit");
 		designMap();
@@ -37,8 +84,22 @@ public class Map : MonoBehaviour {
 		drawGrid ();
 		addUnits ();
 	}
+
+	public void reset(){
+		Resetable[] resetables = FindObjectsOfType(typeof(Resetable)) as Resetable[];
+		foreach (Resetable resetable in resetables) {
+			//Apparently this is a very scary function. This will delete things from the scene using the editor.
+			//This is like deleting it for reals. Like in real life. Take care what you add resetable to.
+			DestroyImmediate (resetable.gameObject);
+		}
+	}
 		
 	public void addUnits(){
+		if (tiles == null) {
+			Debug.Log ("NULLLLLL in addUnits");
+		} else {
+			Debug.Log ("tiles exists addUnits");
+		}
 		addUnit (0, 0);
 	}
 
@@ -49,6 +110,9 @@ public class Map : MonoBehaviour {
 	}
 
 	public void moveUnit(Unit unit, int newX,int newY){
+		if (tiles == null) {
+			Debug.Log ("NULLLLLL");
+		}
 		unit.gameObject.transform.position = new Vector3 (newX * SPACING, newY * SPACING, 0);
 		unit.getGround ().removeUnit(unit);
 		unit.setGround (tiles [newX, newY].GetComponent<Tile> ());
@@ -108,10 +172,11 @@ public class Map : MonoBehaviour {
 		GameObject child = new GameObject ();
 		child.name = "Renderer " + index.ToString ();
 		child.transform.SetParent (transform);
+		child.AddComponent<Resetable> ();
 
 		LineRenderer line = child.AddComponent<LineRenderer> ();
-		line.material=new Material(Shader.Find("Sprites/Default"));
-		line.material.color = Color.black;	
+		line.sharedMaterial=new Material(Shader.Find("Sprites/Default"));
+		line.sharedMaterial.color = Color.black;	
 		line.sortingOrder = 1;
 		line.SetWidth (0.02F, 0.02F);
 		line.SetVertexCount (2);
@@ -128,6 +193,7 @@ public class Map : MonoBehaviour {
 			Vector3 fromPos = new Vector3 (xPos, -SPACING/2, 0);
 			Vector3 toPos = new Vector3 (xPos,yPos , 0);
 			createLine (fromPos, toPos,index);
+			index += 1;
 		}
 		for (int y = 0; y < tiles.GetLength (1) + 1; y += 1) {
 			float xPos = tiles.GetLength (0) * SPACING-SPACING/2;
@@ -135,6 +201,7 @@ public class Map : MonoBehaviour {
 			Vector3 fromPos = new Vector3 (-SPACING/2, yPos, 0);
 			Vector3 toPos = new Vector3 (xPos,yPos, 0);
 			createLine (fromPos, toPos,index);
+			index += 1;
 		}
 	}
 }
